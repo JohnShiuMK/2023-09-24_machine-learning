@@ -479,7 +479,7 @@ Test accuracy: 0.762</code></pre>
 </ul>
 <section id="training-and-validation" class="level4">
 <h4 class="anchored" data-anchor-id="training-and-validation">training and validation</h4>
-<div class="cell" data-execution_count="45">
+<div class="cell" data-execution_count="51">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_validate</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier <span class="co"># example</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -492,10 +492,10 @@ Test accuracy: 0.762</code></pre>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># train model and score</span></span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">4</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(clf, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>) <span class="co"># is a dictionary</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> pd.DataFrame(scores)</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="45">
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_validate(clf, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>) <span class="co"># is a dictionary</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(scores)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="51">
 <div>
 
 
@@ -512,71 +512,71 @@ Test accuracy: 0.762</code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>0.002475</td>
-<td>0.001612</td>
+<td>0.002524</td>
+<td>0.002084</td>
 <td>0.764706</td>
 <td>0.913333</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>0.002041</td>
-<td>0.001354</td>
+<td>0.002855</td>
+<td>0.002135</td>
 <td>0.823529</td>
 <td>0.906667</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>0.002404</td>
-<td>0.001687</td>
+<td>0.001225</td>
+<td>0.000673</td>
 <td>0.705882</td>
 <td>0.906667</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>0.001020</td>
-<td>0.000641</td>
+<td>0.001533</td>
+<td>0.000713</td>
 <td>0.941176</td>
 <td>0.900000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>0.001350</td>
-<td>0.000583</td>
+<td>0.000889</td>
+<td>0.000631</td>
 <td>0.823529</td>
 <td>0.906667</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5</td>
-<td>0.000838</td>
-<td>0.000573</td>
+<td>0.000849</td>
+<td>0.000594</td>
 <td>0.823529</td>
 <td>0.913333</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">6</td>
-<td>0.000819</td>
-<td>0.000559</td>
+<td>0.001619</td>
+<td>0.000639</td>
 <td>0.705882</td>
 <td>0.920000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">7</td>
-<td>0.000820</td>
-<td>0.000930</td>
+<td>0.001016</td>
+<td>0.000566</td>
 <td>0.937500</td>
 <td>0.900662</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">8</td>
-<td>0.000811</td>
-<td>0.000564</td>
+<td>0.000744</td>
+<td>0.000459</td>
 <td>0.937500</td>
 <td>0.900662</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">9</td>
-<td>0.000831</td>
-<td>0.000570</td>
+<td>0.000704</td>
+<td>0.000463</td>
 <td>0.937500</td>
 <td>0.900662</td>
 </tr>
@@ -586,18 +586,18 @@ Test accuracy: 0.762</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="42">
+<div class="cell" data-execution_count="52">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Average cv scores: </span><span class="sc">{</span><span class="bu">round</span>(scores[<span class="st">'test_score'</span>].mean(), <span class="dv">2</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"SD of cv scores: </span><span class="sc">{</span><span class="bu">round</span>(scores[<span class="st">'test_score'</span>].var()<span class="op">**</span><span class="fl">0.5</span>, <span class="dv">2</span>)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Average cv score: 0.84
-SD of cv score: 0.09</code></pre>
+<pre><code>Average cv scores: 0.84
+SD of cv scores: 0.09</code></pre>
 </div>
 </div>
 </section>
 <section id="training-validation-and-testing" class="level4">
 <h4 class="anchored" data-anchor-id="training-validation-and-testing">training, validation and testing</h4>
-<div class="cell" data-execution_count="48">
+<div class="cell" data-execution_count="50">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_validate</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier <span class="co"># example</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -611,8 +611,8 @@ SD of cv score: 0.09</code></pre>
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># (iteratively) train model and score</span></span>
 <span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> depth <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">7</span>):</span>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    clf <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span>depth)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_validate(clf, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>) <span class="co"># is a dictionary</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> pd.DataFrame(scores)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_validate(clf, X_train, y_train, cv<span class="op">=</span><span class="dv">10</span>, return_train_score<span class="op">=</span><span class="va">True</span>) <span class="co"># is a dictionary</span></span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Average cv scores (max_depth=</span><span class="sc">{</span>depth<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span><span class="bu">round</span>(scores[<span class="st">'test_score'</span>].mean(), <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"SD of cv scores (max_depth=</span><span class="sc">{</span>depth<span class="sc">}</span><span class="ss">): </span><span class="sc">{</span><span class="bu">round</span>(scores[<span class="st">'test_score'</span>].var()<span class="op">**</span><span class="fl">0.5</span>, <span class="dv">3</span>)<span class="sc">}</span><span class="ch">\n</span><span class="ss">"</span>)</span>
@@ -623,24 +623,24 @@ SD of cv score: 0.09</code></pre>
 <span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test accuracy: </span><span class="sc">{</span><span class="bu">round</span>(clf.score(X_test, y_test), <span class="dv">3</span>)<span class="sc">}</span><span class="ss">"</span>) <span class="co"># ~ generalization error, comparable to cv error</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Average cv scores (max_depth=1): 0.81
-SD of cv scores (max_depth=1): 0.089
+SD of cv scores (max_depth=1): 0.085
 
 Average cv scores (max_depth=2): 0.804
-SD of cv scores (max_depth=2): 0.09
+SD of cv scores (max_depth=2): 0.086
 
 Average cv scores (max_depth=3): 0.804
-SD of cv scores (max_depth=3): 0.094
+SD of cv scores (max_depth=3): 0.09
 
 Average cv scores (max_depth=4): 0.84
-SD of cv scores (max_depth=4): 0.095
+SD of cv scores (max_depth=4): 0.09
 
 Average cv scores (max_depth=5): 0.846
-SD of cv scores (max_depth=5): 0.087
+SD of cv scores (max_depth=5): 0.083
 
 Average cv scores (max_depth=6): 0.815
-SD of cv scores (max_depth=6): 0.064
+SD of cv scores (max_depth=6): 0.061
 
-Test accuracy: 0.81</code></pre>
+Test accuracy: 0.833</code></pre>
 </div>
 </div>
 </section>
