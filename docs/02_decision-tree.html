@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="DSCI 571 - Supervised Learning I">
 
 <title>😂 🤣 😂 - Decision Tree</title>
 <style>
@@ -122,13 +123,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="./index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./01_dummy.html" rel="" target="">
- <span class="menu-text">Dummy</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-models" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Models</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-models">    
+        <li>
+    <a class="dropdown-item" href="./01_dummy.html" rel="" target="">
+ <span class="dropdown-text">Dummy</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./02_decision-tree.html" rel="" target="">
+ <span class="dropdown-text">Decision Tree</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item">
-    <a class="nav-link active" href="./02_decision-tree.html" rel="" target="" aria-current="page">
- <span class="menu-text">DecisionTree</span></a>
+    <a class="nav-link" href="./03_reducing-generalization-error.html" rel="" target="">
+ <span class="menu-text">Reducing Generalization Error</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -150,14 +162,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#what-is-it" id="toc-what-is-it" class="nav-link" data-scroll-target="#what-is-it">What is it?</a></li>
   <li><a href="#how" id="toc-how" class="nav-link" data-scroll-target="#how">How?</a>
   <ul class="collapse">
-  <li><a href="#define-useful-functions" id="toc-define-useful-functions" class="nav-link" data-scroll-target="#define-useful-functions">(define useful functions)</a></li>
   <li><a href="#classification" id="toc-classification" class="nav-link" data-scroll-target="#classification">Classification</a></li>
   <li><a href="#regression" id="toc-regression" class="nav-link" data-scroll-target="#regression">Regression</a></li>
   </ul></li>
   <li><a href="#hyperparameters" id="toc-hyperparameters" class="nav-link" data-scroll-target="#hyperparameters">Hyperparameters</a></li>
   <li><a href="#pros" id="toc-pros" class="nav-link" data-scroll-target="#pros">Pros</a></li>
   <li><a href="#cons" id="toc-cons" class="nav-link" data-scroll-target="#cons">Cons</a></li>
-  <li><a href="#remarks" id="toc-remarks" class="nav-link" data-scroll-target="#remarks">Remarks</a></li>
+  <li><a href="#remarks" id="toc-remarks" class="nav-link" data-scroll-target="#remarks">Remarks</a>
+  <ul class="collapse">
+  <li><a href="#decisiontreeclassifier" id="toc-decisiontreeclassifier" class="nav-link" data-scroll-target="#decisiontreeclassifier">?DecisionTreeClassifier</a></li>
+  <li><a href="#decisiontreeregressor" id="toc-decisiontreeregressor" class="nav-link" data-scroll-target="#decisiontreeregressor">?DecisionTreeRegressor</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -173,6 +188,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>DSCI 571 - Supervised Learning I </p>
+          </div>
+  </div>
     
   
     
@@ -202,50 +223,265 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="how" class="level2">
 <h2 class="anchored" data-anchor-id="how">How?</h2>
-<section id="define-useful-functions" class="level3">
-<h3 class="anchored" data-anchor-id="define-useful-functions">(define useful functions)</h3>
-<ul>
-<li>Reference: DSCI_571_sup-learn-1_students/lectures/code/utils.py</li>
-</ul>
-<div class="cell" data-execution_count="28">
+<div class="cell" data-execution_count="12">
 <details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re </span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graphviz</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> export_graphviz</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> display_tree(feature_names, tree, counts<span class="op">=</span><span class="va">False</span>):</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" For binary classification only """</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    dot <span class="op">=</span> export_graphviz(</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        tree,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        out_file<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        feature_names<span class="op">=</span>feature_names,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        class_names<span class="op">=</span>tree.classes_.astype(<span class="bu">str</span>),</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        impurity<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    )    </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># adapted from https://stackoverflow.com/questions/44821349/python-graphviz-remove-legend-on-nodes-of-decisiontreeclassifier</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dot = re.sub('(\\\\nsamples = [0-9]+)(\\\\nvalue = \[[0-9]+, [0-9]+\])(\\\\nclass = [A-Za-z0-9]+)', '', dot)</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> counts: </span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"(samples = [0-9]+)</span><span class="ch">\\\\</span><span class="st">n"</span>, <span class="st">""</span>, dot)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"value"</span>, <span class="st">"counts"</span>, dot)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"(</span><span class="ch">\\\\</span><span class="st">nsamples = [0-9]+)(</span><span class="ch">\\\\</span><span class="st">nvalue = \[[0-9]+, [0-9]+\])"</span>, <span class="st">""</span>, dot)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"(samples = [0-9]+)(</span><span class="ch">\\\\</span><span class="st">nvalue = \[[0-9]+, [0-9]+\])</span><span class="ch">\\\\</span><span class="st">n"</span>, <span class="st">""</span>, dot)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> graphviz.Source(dot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<summary>define <code>display_tree</code></summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference: DSCI_571_sup-learn-1/lectures/code/utils.py</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graphviz</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> export_graphviz</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> display_tree(feature_names, tree, counts<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" For binary classification only """</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    dot <span class="op">=</span> export_graphviz(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        tree,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        out_file<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        feature_names<span class="op">=</span>feature_names,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        class_names<span class="op">=</span>tree.classes_.astype(<span class="bu">str</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        impurity<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    )    </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># adapted from https://stackoverflow.com/questions/44821349/python-graphviz-remove-legend-on-nodes-of-decisiontreeclassifier</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dot = re.sub('(\\\\nsamples = [0-9]+)(\\\\nvalue = \[[0-9]+, [0-9]+\])(\\\\nclass = [A-Za-z0-9]+)', '', dot)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> counts: </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"(samples = [0-9]+)</span><span class="ch">\\\\</span><span class="st">n"</span>, <span class="st">""</span>, dot)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"value"</span>, <span class="st">"counts"</span>, dot)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"(</span><span class="ch">\\\\</span><span class="st">nsamples = [0-9]+)(</span><span class="ch">\\\\</span><span class="st">nvalue = \[[0-9]+, [0-9]+\])"</span>, <span class="st">""</span>, dot)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        dot <span class="op">=</span> re.sub(<span class="st">"(samples = [0-9]+)(</span><span class="ch">\\\\</span><span class="st">nvalue = \[[0-9]+, [0-9]+\])</span><span class="ch">\\\\</span><span class="st">n"</span>, <span class="st">""</span>, dot)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> graphviz.Source(dot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section>
+<div class="cell" data-execution_count="34">
+<details>
+<summary>define <code>plot_tree_decision_boundary_and_tree</code></summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reference: DSCI_571_sup-learn-1_students/lectures/code/plotting_functions.py</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mglearn</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> plot_tree</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Custom function to customize the tree plot and hide values and samples</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> custom_plot_tree(tree_model, feature_names<span class="op">=</span><span class="va">None</span>, class_names<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Customizes and displays a tree plot for a scikit-learn Decision Tree Classifier.</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">    - tree (sklearn.tree.DecisionTreeClassifier): The trained Decision Tree Classifier to visualize.</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">    - width: width of the matplotlib plot in inches </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">    - height: height of the matplotlib plot in inches </span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">    - feature_names (list or None): A list of feature names to label the tree nodes with feature names.</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">                                    If None, generic feature names will be used.</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">    - class_names (list or None): A list of class names to label the tree nodes with class names.</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">                                  If None, generic class names will be used.</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">    - **kwargs: Additional keyword arguments to be passed to the `sklearn.tree.plot_tree` function.</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">    - None: The function displays the customized tree plot using Matplotlib.</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">    This function customizes the appearance of a Decision Tree plot generated by the scikit-learn</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">    `plot_tree` function. It hides both the samples and values in each node of the tree plot</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">    for improved visualization.</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span>    </span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    plot_tree(tree_model, </span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>              feature_names<span class="op">=</span>feature_names, </span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>              class_names<span class="op">=</span>class_names, </span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>              filled<span class="op">=</span><span class="va">True</span>, </span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>              <span class="op">**</span>kwargs)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Customize the appearance of the text elements for each node</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> text <span class="kw">in</span> plt.gca().texts:</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        new_text <span class="op">=</span> re.sub(<span class="st">'samples = \d+</span><span class="ch">\n</span><span class="st">'</span>, <span class="st">''</span>, text.get_text()) <span class="co"># Hide samples</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        text.set_text(new_text) </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_tree_decision_boundary(</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    model, X, y, x_label<span class="op">=</span><span class="st">"x-axis"</span>, y_label<span class="op">=</span><span class="st">"y-axis"</span>, eps<span class="op">=</span><span class="va">None</span>, ax<span class="op">=</span><span class="va">None</span>, title<span class="op">=</span><span class="va">None</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ax <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> plt.gca()</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> title <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> <span class="st">"max_depth=</span><span class="sc">%d</span><span class="st">"</span> <span class="op">%</span> (model.tree_.max_depth)</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    mglearn.plots.plot_2d_separator(</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>        model, X.to_numpy(), eps<span class="op">=</span>eps, fill<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, ax<span class="op">=</span>ax</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    mglearn.discrete_scatter(X.iloc[:, <span class="dv">0</span>], X.iloc[:, <span class="dv">1</span>], y, ax<span class="op">=</span>ax)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(x_label)</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(y_label)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_tree_decision_boundary_and_tree(</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    model, X, y, height<span class="op">=</span><span class="dv">6</span>, width<span class="op">=</span><span class="dv">16</span>, fontsize <span class="op">=</span> <span class="dv">9</span>, x_label<span class="op">=</span><span class="st">"x-axis"</span>, y_label<span class="op">=</span><span class="st">"y-axis"</span>, eps<span class="op">=</span><span class="va">None</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>        <span class="dv">1</span>,</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span>,</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        figsize<span class="op">=</span>(width, height),</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        subplot_kw<span class="op">=</span>{<span class="st">"xticks"</span>: (), <span class="st">"yticks"</span>: ()},</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        gridspec_kw<span class="op">=</span>{<span class="st">"width_ratios"</span>: [<span class="fl">1.5</span>, <span class="dv">2</span>]},</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    plot_tree_decision_boundary(model, X, y, x_label, y_label, eps, ax<span class="op">=</span>ax[<span class="dv">0</span>])</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    custom_plot_tree(model, </span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>                 feature_names<span class="op">=</span>X.columns.tolist(), </span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>                 class_names<span class="op">=</span>[<span class="st">'A+'</span>, <span class="st">'not A+'</span>],</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>                 impurity<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>                 fontsize<span class="op">=</span>fontsize, ax<span class="op">=</span>ax[<span class="dv">1</span>])</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].set_axis_off()</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <section id="classification" class="level3">
 <h3 class="anchored" data-anchor-id="classification">Classification</h3>
+<div class="cell" data-execution_count="43">
+<details>
+<summary>read df</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/quiz2-grade-toy-classification.csv"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="43">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ml_experience</th>
+<th data-quarto-table-cell-role="th">class_attendance</th>
+<th data-quarto-table-cell-role="th">lab1</th>
+<th data-quarto-table-cell-role="th">lab2</th>
+<th data-quarto-table-cell-role="th">lab3</th>
+<th data-quarto-table-cell-role="th">lab4</th>
+<th data-quarto-table-cell-role="th">quiz1</th>
+<th data-quarto-table-cell-role="th">quiz2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1</td>
+<td>1</td>
+<td>92</td>
+<td>93</td>
+<td>84</td>
+<td>91</td>
+<td>92</td>
+<td>A+</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>0</td>
+<td>94</td>
+<td>90</td>
+<td>80</td>
+<td>83</td>
+<td>91</td>
+<td>not A+</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>0</td>
+<td>0</td>
+<td>78</td>
+<td>85</td>
+<td>83</td>
+<td>80</td>
+<td>80</td>
+<td>not A+</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>0</td>
+<td>1</td>
+<td>91</td>
+<td>94</td>
+<td>92</td>
+<td>91</td>
+<td>89</td>
+<td>A+</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>0</td>
+<td>1</td>
+<td>77</td>
+<td>83</td>
+<td>90</td>
+<td>92</td>
+<td>85</td>
+<td>A+</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>y, X <span class="op">=</span> df.pop(<span class="st">"quiz2"</span>), df</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>clf.fit(X, y)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>clf.predict(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="44">
+<pre><code>array(['A+', 'not A+', 'not A+', 'A+', 'A+', 'not A+', 'A+', 'not A+',
+       'not A+', 'not A+', 'A+', 'A+', 'A+', 'A+', 'not A+', 'not A+',
+       'A+', 'not A+', 'not A+', 'not A+', 'A+'], dtype=object)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="45">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>clf.score(X, y) <span class="co"># accuracy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="45">
+<pre><code>1.0</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="46">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>display_tree(X.columns, clf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="46">
+<p><img src="02_decision-tree_files/figure-html/cell-7-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<section id="decision-stump" class="level4">
+<h4 class="anchored" data-anchor-id="decision-stump">Decision stump</h4>
+<div class="cell" data-execution_count="40">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[[<span class="st">'lab4'</span>, <span class="st">'quiz1'</span>]]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier(max_depth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>clf.fit(X, y)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>clf.predict(X)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>plot_tree_decision_boundary_and_tree(clf, X, y, x_label<span class="op">=</span><span class="st">'lab4'</span>, y_label<span class="op">=</span><span class="st">'quiz1'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/johnshiu/miniconda3/envs/571/lib/python3.11/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but DecisionTreeClassifier was fitted with feature names
+  warnings.warn(</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="02_decision-tree_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="regression" class="level3">
+<h3 class="anchored" data-anchor-id="regression">Regression</h3>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/quiz2-grade-toy-classification.csv"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>y, X <span class="op">=</span> df.pop(<span class="st">"quiz2"</span>), df</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>X.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>read df</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/quiz2-grade-toy-regression.csv"</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -261,6 +497,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th data-quarto-table-cell-role="th">lab3</th>
 <th data-quarto-table-cell-role="th">lab4</th>
 <th data-quarto-table-cell-role="th">quiz1</th>
+<th data-quarto-table-cell-role="th">quiz2</th>
 </tr>
 </thead>
 <tbody>
@@ -273,6 +510,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>84</td>
 <td>91</td>
 <td>92</td>
+<td>90</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -283,131 +521,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>80</td>
 <td>83</td>
 <td>91</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>0</td>
-<td>0</td>
-<td>78</td>
-<td>85</td>
-<td>83</td>
-<td>80</td>
-<td>80</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>0</td>
-<td>1</td>
-<td>91</td>
-<td>94</td>
-<td>92</td>
-<td>91</td>
-<td>89</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>0</td>
-<td>1</td>
-<td>77</td>
-<td>83</td>
-<td>90</td>
-<td>92</td>
-<td>85</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true,&quot;source_hidden&quot;:true}" data-execution_count="36">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>X_binary <span class="op">=</span> X.copy()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>X_binary.loc[:,<span class="st">"lab1"</span>:<span class="st">"quiz1"</span>] <span class="op">=</span> X_binary.loc[:,<span class="st">"lab1"</span>:<span class="st">"quiz1"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.where(x <span class="op">&gt;=</span> <span class="dv">90</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier()</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>clf.fit(X_binary, y)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>clf.predict(X_binary)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>clf.score(X_binary, y) <span class="co"># accuracy</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>display_tree(X_binary.columns, clf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="36">
-<p><img src="02_decision-tree_files/figure-html/cell-4-output-1.svg" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>clf <span class="op">=</span> DecisionTreeClassifier()</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>clf.fit(X, y)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>clf.predict(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="37">
-<pre><code>array(['A+', 'not A+', 'not A+', 'A+', 'A+', 'not A+', 'A+', 'not A+',
-       'not A+', 'not A+', 'A+', 'A+', 'A+', 'A+', 'not A+', 'not A+',
-       'A+', 'not A+', 'not A+', 'not A+', 'A+'], dtype=object)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="38">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>clf.score(X, y) <span class="co"># accuracy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
-<pre><code>1.0</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="40">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>display_tree(X.columns, clf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="40">
-<p><img src="02_decision-tree_files/figure-html/cell-7-output-1.svg" class="img-fluid"></p>
-</div>
-</div>
-</section>
-<section id="regression" class="level3">
-<h3 class="anchored" data-anchor-id="regression">Regression</h3>
-<div class="cell" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/quiz2-grade-toy-regression.csv"</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>y, X <span class="op">=</span> df.pop(<span class="st">"quiz2"</span>), df</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>X.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="37">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">ml_experience</th>
-<th data-quarto-table-cell-role="th">class_attendance</th>
-<th data-quarto-table-cell-role="th">lab1</th>
-<th data-quarto-table-cell-role="th">lab2</th>
-<th data-quarto-table-cell-role="th">lab3</th>
-<th data-quarto-table-cell-role="th">lab4</th>
-<th data-quarto-table-cell-role="th">quiz1</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>1</td>
-<td>1</td>
-<td>92</td>
-<td>93</td>
 <td>84</td>
-<td>91</td>
-<td>92</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1</td>
-<td>0</td>
-<td>94</td>
-<td>90</td>
-<td>80</td>
-<td>83</td>
-<td>91</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -418,6 +532,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>83</td>
 <td>80</td>
 <td>80</td>
+<td>82</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -428,6 +543,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>92</td>
 <td>91</td>
 <td>89</td>
+<td>92</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -438,6 +554,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>90</td>
 <td>92</td>
 <td>85</td>
+<td>90</td>
 </tr>
 </tbody>
 </table>
@@ -446,18 +563,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell" data-execution_count="39">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeRegressor</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>reg <span class="op">=</span> DummyRegressor(strategy<span class="op">=</span><span class="st">"mean"</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>reg.fit(X, y)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>reg.predict(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeRegressor</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>y, X <span class="op">=</span> df.pop(<span class="st">"quiz2"</span>), df</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>reg <span class="op">=</span> DummyRegressor(strategy<span class="op">=</span><span class="st">"mean"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>reg.fit(X, y)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>reg.predict(X)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="39">
 <pre><code>array([86.28571429, 86.28571429, 86.28571429, 86.28571429, 86.28571429,
        86.28571429, 86.28571429])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="40">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>reg.score(X, y) <span class="co"># R^2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>reg.score(X, y) <span class="co"># R^2 (it can be -ve, which is worse than DummyRegressor)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="40">
 <pre><code>0.0</code></pre>
 </div>
@@ -467,20 +586,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="hyperparameters" class="level2">
 <h2 class="anchored" data-anchor-id="hyperparameters">Hyperparameters</h2>
 <ul>
-<li><code>criterion</code> - impurity
+<li><code>criterion</code> for <strong>minimizing impurity</strong>
 <ul>
-<li>(<code>DecisionTreeClassifier</code>) Default: “gini”
+<li>(<code>DecisionTreeClassifier</code>) Default: <code>gini</code>
 <ul>
-<li>“gini”: gini index</li>
-<li>“entropy”: cross entropy</li>
-<li>“log_loss”: information gain</li>
+<li><code>gini</code>: gini index</li>
+<li><code>entropy</code>: cross entropy</li>
+<li><code>log_loss</code>: information gain</li>
 </ul></li>
-<li>(<code>DecisionTreeRegressor</code>) Default: “squared_error”
+<li>(<code>DecisionTreeRegressor</code>) Default: <code>squared_error</code>
 <ul>
-<li>{“squared_error”, “friedman_mse”, “absolute_error”, “poisson”}</li>
+<li>{<code>squared_error</code>, <code>friedman_mse</code>, <code>absolute_error</code>, <code>poisson</code>}</li>
 </ul></li>
 </ul></li>
-<li></li>
+<li><code>max_depth</code>, maximum tree depth. Default: <code>None</code>
+<ul>
+<li>If <code>None</code>, the decision tree could be creating very specific rules, based on just one example from the data</li>
+<li>If <code>max_depth = 1</code>, the tree is called <strong>Decision stump</strong></li>
+</ul></li>
+<li><code>min_samples_split</code></li>
+<li><code>min_samples_leaf</code></li>
+<li><code>max_leaf_nodes</code></li>
 </ul>
 </section>
 <section id="pros" class="level2">
@@ -491,8 +617,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="remarks" class="level2">
 <h2 class="anchored" data-anchor-id="remarks">Remarks</h2>
-<div class="cell" data-execution_count="43">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>?DecisionTreeClassifier</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="decisiontreeclassifier" class="level3">
+<h3 class="anchored" data-anchor-id="decisiontreeclassifier">?DecisionTreeClassifier</h3>
+<div class="cell" data-jupyter="{&quot;outputs_hidden&quot;:true}" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>?DecisionTreeClassifier</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-red-fg">Init signature:</span>
@@ -688,8 +816,11 @@ array([ 1.     ,  0.93...,  0.86...,  0.93...,  0.93...,
 </div>
 </div>
 </div>
+</section>
+<section id="decisiontreeregressor" class="level3">
+<h3 class="anchored" data-anchor-id="decisiontreeregressor">?DecisionTreeRegressor</h3>
 <div class="cell" data-execution_count="44">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>?DecisionTreeRegressor</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>?DecisionTreeRegressor</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-red-fg">Init signature:</span>
@@ -866,8 +997,26 @@ array([-0.39..., -0.46...,  0.02...,  0.06..., -0.50...,
 </div>
 </div>
 </div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import numpy as np</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># X_binary = X.copy()</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># X_binary.loc[:,"lab1":"quiz1"] = X_binary.loc[:,"lab1":"quiz1"].apply(lambda x: np.where(x &gt;= 90, 1, 0))</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># from sklearn.tree import DecisionTreeClassifier</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># clf = DecisionTreeClassifier()</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># clf.fit(X_binary, y)</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># clf.predict(X_binary)</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># clf.score(X_binary, y) # accuracy</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># display_tree(X_binary.columns, clf)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

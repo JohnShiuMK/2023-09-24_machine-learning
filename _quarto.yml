@@ -8,10 +8,14 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: 01_dummy.ipynb
-        text: Dummy
-      - href: 02_decision-tree.ipynb
-        text: DecisionTree
+      - text: Models
+        menu:  
+        - href: 01_dummy.ipynb
+          text: Dummy
+        - href: 02_decision-tree.ipynb
+          text: Decision Tree
+      - text: Reducing Generalization Error
+        href: 03_reducing-generalization-error.ipynb
 
 format:
   html:
