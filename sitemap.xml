@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/0102_decision-tree.html</loc>
+    <lastmod>2023-10-17T18:19:07.524Z</lastmod>
+  </url>
+  <url>
     <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/03_reducing-generalization-error.html</loc>
-    <lastmod>2023-10-10T06:25:23.091Z</lastmod>
+    <lastmod>2023-10-17T18:19:06.572Z</lastmod>
+  </url>
+  <url>
+    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/04_data-preprocessing.html</loc>
+    <lastmod>2023-10-17T18:19:05.764Z</lastmod>
+  </url>
+  <url>
+    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/0101_dummy.html</loc>
+    <lastmod>2023-10-17T18:19:05.052Z</lastmod>
+  </url>
+  <url>
+    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/0104_svm-rbf.html</loc>
+    <lastmod>2023-10-17T18:19:04.639Z</lastmod>
   </url>
   <url>
     <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/index.html</loc>
-    <lastmod>2023-10-10T06:25:22.309Z</lastmod>
-  </url>
-  <url>
-    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/02_decision-tree.html</loc>
-    <lastmod>2023-10-10T06:25:21.674Z</lastmod>
-  </url>
-  <url>
-    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/01_dummy.html</loc>
-    <lastmod>2023-10-10T06:25:22.065Z</lastmod>
+    <lastmod>2023-10-17T18:19:05.298Z</lastmod>
   </url>
   <url>
     <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/about.html</loc>
-    <lastmod>2023-10-10T06:25:22.555Z</lastmod>
+    <lastmod>2023-10-17T18:19:06.005Z</lastmod>
+  </url>
+  <url>
+    <loc>https://JohnShiuMK.github.io/2023-09-24_machine-learning/0103_knn.html</loc>
+    <lastmod>2023-10-17T18:19:07.010Z</lastmod>
   </url>
 </urlset>
