@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="DSCI 571 - Supervised Learning I">
+
+<title>😂 🤣 😂 - SVM RBF (Support Vector Machine - Radial Basis Function kernel)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">😂 🤣 😂</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-models" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Models</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-models">    
+        <li>
+    <a class="dropdown-item" href="./0101_dummy.html" rel="" target="">
+ <span class="dropdown-text">Dummy</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./0102_decision-tree.html" rel="" target="">
+ <span class="dropdown-text">Decision Tree</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./0103_knn.html" rel="" target="">
+ <span class="dropdown-text">k-Nearest Neighbours</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./0104_svm-rbf.html" rel="" target="">
+ <span class="dropdown-text">SVM RBF</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./03_reducing-generalization-error.html" rel="" target="">
+ <span class="menu-text">Reducing Generalization Error</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./04_data-preprocessing.html" rel="" target="">
+ <span class="menu-text">Data Preprocessing</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#use-case" id="toc-use-case" class="nav-link active" data-scroll-target="#use-case">Use case</a></li>
+  <li><a href="#what-is-it" id="toc-what-is-it" class="nav-link" data-scroll-target="#what-is-it">What is it?</a></li>
+  <li><a href="#how" id="toc-how" class="nav-link" data-scroll-target="#how">How?</a>
+  <ul class="collapse">
+  <li><a href="#classification" id="toc-classification" class="nav-link" data-scroll-target="#classification">Classification</a></li>
+  <li><a href="#regression" id="toc-regression" class="nav-link" data-scroll-target="#regression">Regression</a></li>
+  </ul></li>
+  <li><a href="#hyperparameters" id="toc-hyperparameters" class="nav-link" data-scroll-target="#hyperparameters">Hyperparameters</a></li>
+  <li><a href="#pros" id="toc-pros" class="nav-link" data-scroll-target="#pros">Pros</a></li>
+  <li><a href="#cons" id="toc-cons" class="nav-link" data-scroll-target="#cons">Cons</a></li>
+  <li><a href="#remarks" id="toc-remarks" class="nav-link" data-scroll-target="#remarks">Remarks</a>
+  <ul class="collapse">
+  <li><a href="#curse-of-dimensionality" id="toc-curse-of-dimensionality" class="nav-link" data-scroll-target="#curse-of-dimensionality">Curse of dimensionality</a></li>
+  <li><a href="#svc" id="toc-svc" class="nav-link" data-scroll-target="#svc">?SVC</a></li>
+  <li><a href="#svr" id="toc-svr" class="nav-link" data-scroll-target="#svr">?SVR</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">SVM RBF (Support Vector Machine - Radial Basis Function kernel)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>DSCI 571 - Supervised Learning I </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="use-case" class="level2">
+<h2 class="anchored" data-anchor-id="use-case">Use case</h2>
+<ul>
+<li>Similar to kNN?</li>
+</ul>
+</section>
+<section id="what-is-it" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-it">What is it?</h2>
+<ul>
+<li><strong>Analogy-Based Model</strong>
+<ul>
+<li>i.e.&nbsp;assigned nearby points the same label</li>
+</ul></li>
+<li>Similar to weighted <span class="math inline">\(k\)</span>-NN, <strong>however</strong>, the decision boundary only depends on support vectors (key examples in the dataset)</li>
+<li>Define decision boundary by a subset of +ve, -ve examples, their weights and similarity measure
+<ul>
+<li>Test example = +ve if it looks more like a +ve example than -ve</li>
+<li>The similarity metric is called <em>kernel</em>
+<ul>
+<li>Popular kernel: Radial Basis Functions (RBFs)</li>
+</ul></li>
+<li>Decision boundary <span class="math inline">\(\sim\)</span> a smooth version of k-NN’s decision boundary</li>
+</ul></li>
+</ul>
+</section>
+<section id="how" class="level2">
+<h2 class="anchored" data-anchor-id="how">How?</h2>
+<section id="classification" class="level3">
+<h3 class="anchored" data-anchor-id="classification">Classification</h3>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>prepare X_train, X_test, y_train, y_test</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/canada_usa_cities.csv"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>y, X <span class="op">=</span> df.pop(<span class="st">"country"</span>), df</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">123</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>pd.concat([X_train, y_train], axis<span class="op">=</span><span class="dv">1</span>).head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">longitude</th>
+<th data-quarto-table-cell-role="th">latitude</th>
+<th data-quarto-table-cell-role="th">country</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">160</td>
+<td>-76.4813</td>
+<td>44.2307</td>
+<td>Canada</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">127</td>
+<td>-81.2496</td>
+<td>42.9837</td>
+<td>Canada</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">169</td>
+<td>-66.0580</td>
+<td>45.2788</td>
+<td>Canada</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">188</td>
+<td>-73.2533</td>
+<td>45.3057</td>
+<td>Canada</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">187</td>
+<td>-67.9245</td>
+<td>47.1652</td>
+<td>Canada</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>svm <span class="op">=</span> SVC(kernel<span class="op">=</span><span class="st">'rbf'</span>, gamma <span class="op">=</span> <span class="fl">0.01</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>svm.fit(X_train, y_train)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>svm.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>array(['Canada', 'Canada', 'Canada', 'Canada', 'Canada', 'Canada',
+       'Canada', 'Canada', 'Canada', 'USA', 'USA', 'Canada', 'Canada',
+       'Canada', 'Canada', 'USA', 'Canada', 'USA', 'Canada', 'Canada',
+       'Canada', 'Canada', 'Canada', 'Canada', 'Canada', 'Canada',
+       'Canada', 'Canada', 'Canada', 'Canada', 'Canada', 'USA', 'Canada',
+       'Canada', 'Canada', 'Canada', 'Canada', 'USA', 'USA', 'Canada',
+       'Canada', 'Canada'], dtype=object)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>svm.score(X_test, y_test) <span class="co"># accuracy</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>0.8333333333333334</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">## </span><span class="al">FIXME</span><span class="co">: visualization: Plot_support_vectors</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="regression" class="level3">
+<h3 class="anchored" data-anchor-id="regression">Regression</h3>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>prepare X_train, X_test, y_train, y_test</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/quiz2-grade-toy-regression.csv"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[[<span class="st">'lab1'</span>, <span class="st">'lab2'</span>, <span class="st">'lab3'</span>, <span class="st">'lab4'</span>, <span class="st">'quiz1'</span>, <span class="st">'quiz2'</span>]]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>y, X <span class="op">=</span> df.pop(<span class="st">"quiz2"</span>), df</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">123</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>pd.concat([X_train, y_train], axis<span class="op">=</span><span class="dv">1</span>).head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">lab1</th>
+<th data-quarto-table-cell-role="th">lab2</th>
+<th data-quarto-table-cell-role="th">lab3</th>
+<th data-quarto-table-cell-role="th">lab4</th>
+<th data-quarto-table-cell-role="th">quiz1</th>
+<th data-quarto-table-cell-role="th">quiz2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>77</td>
+<td>83</td>
+<td>90</td>
+<td>92</td>
+<td>85</td>
+<td>90</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">0</td>
+<td>92</td>
+<td>93</td>
+<td>84</td>
+<td>91</td>
+<td>92</td>
+<td>90</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>78</td>
+<td>85</td>
+<td>83</td>
+<td>80</td>
+<td>80</td>
+<td>82</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>70</td>
+<td>73</td>
+<td>68</td>
+<td>74</td>
+<td>71</td>
+<td>75</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>80</td>
+<td>88</td>
+<td>89</td>
+<td>88</td>
+<td>91</td>
+<td>91</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVR</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>svm <span class="op">=</span> SVR(kernel<span class="op">=</span><span class="st">'rbf'</span>, gamma <span class="op">=</span> <span class="fl">0.05</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>svm.fit(X_train, y_train)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>svm.predict(X_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>array([89.39814152, 89.40557499])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>svm.score(X_test, y_test) <span class="co"># R^2 (it can be -ve, which is worse than DummyRegressor)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>-0.12096790646548117</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="hyperparameters" class="level2">
+<h2 class="anchored" data-anchor-id="hyperparameters">Hyperparameters</h2>
+<ul>
+<li><code>gamma</code>
+<ul>
+<li>Control the complexity</li>
+<li>larger <span class="math inline">\(\rightarrow\)</span> more complex</li>
+<li>smaller <span class="math inline">\(\rightarrow\)</span> less complex</li>
+</ul></li>
+<li><code>C</code>
+<ul>
+<li>larger <span class="math inline">\(\rightarrow\)</span> more complex</li>
+<li>smaller <span class="math inline">\(\rightarrow\)</span> less complex</li>
+</ul></li>
+<li>Default: Features are equally important
+<ul>
+<li>Which hyperparameter controls the weighting of feature?</li>
+</ul></li>
+</ul>
+</section>
+<section id="pros" class="level2">
+<h2 class="anchored" data-anchor-id="pros">Pros</h2>
+<ul>
+<li>Time and space complexity are better than <span class="math inline">\(k\)</span>-NN
+<ul>
+<li>No significant difference for small dataset</li>
+<li>But huge speed and memory difference for large dataset</li>
+</ul></li>
+<li>Usually more accurate than <span class="math inline">\(k\)</span>-NN</li>
+</ul>
+</section>
+<section id="cons" class="level2">
+<h2 class="anchored" data-anchor-id="cons">Cons</h2>
+</section>
+<section id="remarks" class="level2">
+<h2 class="anchored" data-anchor-id="remarks">Remarks</h2>
+<ul>
+<li><code>svm.support_</code> gives the indices of support vectors</li>
+<li>To optimize the two hyperparameters <code>gamma</code> and <code>C</code>,
+<ul>
+<li><code>sklearn.model_selection.GridSearchCV</code></li>
+<li><code>sklearn.model_selection.RandomizedSearchCV</code></li>
+</ul></li>
+</ul>
+<section id="curse-of-dimensionality" class="level3">
+<h3 class="anchored" data-anchor-id="curse-of-dimensionality">Curse of dimensionality</h3>
+<ul>
+<li>If there are too many irrelevant features, the models might get confused.
+<ul>
+<li>as the accidental similarity swamps out meaning similarity</li>
+<li>Might become random guessing <span class="math inline">\(\rightarrow\)</span> like dummy classifier</li>
+</ul></li>
+</ul>
+</section>
+<section id="svc" class="level3">
+<h3 class="anchored" data-anchor-id="svc">?SVC</h3>
+<div class="cell" data-scrolled="true" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>?SVC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Init signature:</span>
+SVC<span class="ansi-blue-fg">(</span>
+    <span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">,</span>
+    C<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1.0</span><span class="ansi-blue-fg">,</span>
+    kernel<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'rbf'</span><span class="ansi-blue-fg">,</span>
+    degree<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">3</span><span class="ansi-blue-fg">,</span>
+    gamma<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'scale'</span><span class="ansi-blue-fg">,</span>
+    coef0<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0.0</span><span class="ansi-blue-fg">,</span>
+    shrinking<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+    probability<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    tol<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0.001</span><span class="ansi-blue-fg">,</span>
+    cache_size<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">200</span><span class="ansi-blue-fg">,</span>
+    class_weight<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+    verbose<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    max_iter<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
+    decision_function_shape<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'ovr'</span><span class="ansi-blue-fg">,</span>
+    break_ties<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    random_state<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">Docstring:</span>     
+C-Support Vector Classification.
+The implementation is based on libsvm. The fit time scales at least
+quadratically with the number of samples and may be impractical
+beyond tens of thousands of samples. For large datasets
+consider using :class:`~sklearn.svm.LinearSVC` or
+:class:`~sklearn.linear_model.SGDClassifier` instead, possibly after a
+:class:`~sklearn.kernel_approximation.Nystroem` transformer or
+other :ref:`kernel_approximation`.
+The multiclass support is handled according to a one-vs-one scheme.
+For details on the precise mathematical formulation of the provided
+kernel functions and how `gamma`, `coef0` and `degree` affect each
+other, see the corresponding section in the narrative documentation:
+:ref:`svm_kernels`.
+Read more in the :ref:`User Guide &lt;svm_classification&gt;`.
+Parameters
+----------
+C : float, default=1.0
+    Regularization parameter. The strength of the regularization is
+    inversely proportional to C. Must be strictly positive. The penalty
+    is a squared l2 penalty.
+kernel : {'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'} or callable,          default='rbf'
+    Specifies the kernel type to be used in the algorithm. If
+    none is given, 'rbf' will be used. If a callable is given it is used to
+    pre-compute the kernel matrix from data matrices; that matrix should be
+    an array of shape ``(n_samples, n_samples)``. For an intuitive
+    visualization of different kernel types see
+    :ref:`sphx_glr_auto_examples_svm_plot_svm_kernels.py`.
+degree : int, default=3
+    Degree of the polynomial kernel function ('poly').
+    Must be non-negative. Ignored by all other kernels.
+gamma : {'scale', 'auto'} or float, default='scale'
+    Kernel coefficient for 'rbf', 'poly' and 'sigmoid'.
+    - if ``gamma='scale'`` (default) is passed then it uses
+      1 / (n_features * X.var()) as value of gamma,
+    - if 'auto', uses 1 / n_features
+    - if float, must be non-negative.
+    .. versionchanged:: 0.22
+       The default value of ``gamma`` changed from 'auto' to 'scale'.
+coef0 : float, default=0.0
+    Independent term in kernel function.
+    It is only significant in 'poly' and 'sigmoid'.
+shrinking : bool, default=True
+    Whether to use the shrinking heuristic.
+    See the :ref:`User Guide &lt;shrinking_svm&gt;`.
+probability : bool, default=False
+    Whether to enable probability estimates. This must be enabled prior
+    to calling `fit`, will slow down that method as it internally uses
+    5-fold cross-validation, and `predict_proba` may be inconsistent with
+    `predict`. Read more in the :ref:`User Guide &lt;scores_probabilities&gt;`.
+tol : float, default=1e-3
+    Tolerance for stopping criterion.
+cache_size : float, default=200
+    Specify the size of the kernel cache (in MB).
+class_weight : dict or 'balanced', default=None
+    Set the parameter C of class i to class_weight[i]*C for
+    SVC. If not given, all classes are supposed to have
+    weight one.
+    The "balanced" mode uses the values of y to automatically adjust
+    weights inversely proportional to class frequencies in the input data
+    as ``n_samples / (n_classes * np.bincount(y))``.
+verbose : bool, default=False
+    Enable verbose output. Note that this setting takes advantage of a
+    per-process runtime setting in libsvm that, if enabled, may not work
+    properly in a multithreaded context.
+max_iter : int, default=-1
+    Hard limit on iterations within solver, or -1 for no limit.
+decision_function_shape : {'ovo', 'ovr'}, default='ovr'
+    Whether to return a one-vs-rest ('ovr') decision function of shape
+    (n_samples, n_classes) as all other classifiers, or the original
+    one-vs-one ('ovo') decision function of libsvm which has shape
+    (n_samples, n_classes * (n_classes - 1) / 2). However, note that
+    internally, one-vs-one ('ovo') is always used as a multi-class strategy
+    to train models; an ovr matrix is only constructed from the ovo matrix.
+    The parameter is ignored for binary classification.
+    .. versionchanged:: 0.19
+        decision_function_shape is 'ovr' by default.
+    .. versionadded:: 0.17
+       *decision_function_shape='ovr'* is recommended.
+    .. versionchanged:: 0.17
+       Deprecated *decision_function_shape='ovo' and None*.
+break_ties : bool, default=False
+    If true, ``decision_function_shape='ovr'``, and number of classes &gt; 2,
+    :term:`predict` will break ties according to the confidence values of
+    :term:`decision_function`; otherwise the first class among the tied
+    classes is returned. Please note that breaking ties comes at a
+    relatively high computational cost compared to a simple predict.
+    .. versionadded:: 0.22
+random_state : int, RandomState instance or None, default=None
+    Controls the pseudo random number generation for shuffling the data for
+    probability estimates. Ignored when `probability` is False.
+    Pass an int for reproducible output across multiple function calls.
+    See :term:`Glossary &lt;random_state&gt;`.
+Attributes
+----------
+class_weight_ : ndarray of shape (n_classes,)
+    Multipliers of parameter C for each class.
+    Computed based on the ``class_weight`` parameter.
+classes_ : ndarray of shape (n_classes,)
+    The classes labels.
+coef_ : ndarray of shape (n_classes * (n_classes - 1) / 2, n_features)
+    Weights assigned to the features (coefficients in the primal
+    problem). This is only available in the case of a linear kernel.
+    `coef_` is a readonly property derived from `dual_coef_` and
+    `support_vectors_`.
+dual_coef_ : ndarray of shape (n_classes -1, n_SV)
+    Dual coefficients of the support vector in the decision
+    function (see :ref:`sgd_mathematical_formulation`), multiplied by
+    their targets.
+    For multiclass, coefficient for all 1-vs-1 classifiers.
+    The layout of the coefficients in the multiclass case is somewhat
+    non-trivial. See the :ref:`multi-class section of the User Guide
+    &lt;svm_multi_class&gt;` for details.
+fit_status_ : int
+    0 if correctly fitted, 1 otherwise (will raise warning)
+intercept_ : ndarray of shape (n_classes * (n_classes - 1) / 2,)
+    Constants in decision function.
+n_features_in_ : int
+    Number of features seen during :term:`fit`.
+    .. versionadded:: 0.24
+feature_names_in_ : ndarray of shape (`n_features_in_`,)
+    Names of features seen during :term:`fit`. Defined only when `X`
+    has feature names that are all strings.
+    .. versionadded:: 1.0
+n_iter_ : ndarray of shape (n_classes * (n_classes - 1) // 2,)
+    Number of iterations run by the optimization routine to fit the model.
+    The shape of this attribute depends on the number of models optimized
+    which in turn depends on the number of classes.
+    .. versionadded:: 1.1
+support_ : ndarray of shape (n_SV)
+    Indices of support vectors.
+support_vectors_ : ndarray of shape (n_SV, n_features)
+    Support vectors. An empty array if kernel is precomputed.
+n_support_ : ndarray of shape (n_classes,), dtype=int32
+    Number of support vectors for each class.
+probA_ : ndarray of shape (n_classes * (n_classes - 1) / 2)
+probB_ : ndarray of shape (n_classes * (n_classes - 1) / 2)
+    If `probability=True`, it corresponds to the parameters learned in
+    Platt scaling to produce probability estimates from decision values.
+    If `probability=False`, it's an empty array. Platt scaling uses the
+    logistic function
+    ``1 / (1 + exp(decision_value * probA_ + probB_))``
+    where ``probA_`` and ``probB_`` are learned from the dataset [2]_. For
+    more information on the multiclass case and training procedure see
+    section 8 of [1]_.
+shape_fit_ : tuple of int of shape (n_dimensions_of_X,)
+    Array dimensions of training vector ``X``.
+See Also
+--------
+SVR : Support Vector Machine for Regression implemented using libsvm.
+LinearSVC : Scalable Linear Support Vector Machine for classification
+    implemented using liblinear. Check the See Also section of
+    LinearSVC for more comparison element.
+References
+----------
+.. [1] `LIBSVM: A Library for Support Vector Machines
+    &lt;http://www.csie.ntu.edu.tw/~cjlin/papers/libsvm.pdf&gt;`_
+.. [2] `Platt, John (1999). "Probabilistic Outputs for Support Vector
+    Machines and Comparisons to Regularized Likelihood Methods"
+    &lt;https://citeseerx.ist.psu.edu/doc_view/pid/42e5ed832d4310ce4378c44d05570439df28a393&gt;`_
+Examples
+--------
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from sklearn.pipeline import make_pipeline
+&gt;&gt;&gt; from sklearn.preprocessing import StandardScaler
+&gt;&gt;&gt; X = np.array([[-1, -1], [-2, -1], [1, 1], [2, 1]])
+&gt;&gt;&gt; y = np.array([1, 1, 2, 2])
+&gt;&gt;&gt; from sklearn.svm import SVC
+&gt;&gt;&gt; clf = make_pipeline(StandardScaler(), SVC(gamma='auto'))
+&gt;&gt;&gt; clf.fit(X, y)
+Pipeline(steps=[('standardscaler', StandardScaler()),
+                ('svc', SVC(gamma='auto'))])
+&gt;&gt;&gt; print(clf.predict([[-0.8, -1]]))
+[1]
+<span class="ansi-red-fg">File:</span>           ~/miniconda3/envs/571/lib/python3.11/site-packages/sklearn/svm/_classes.py
+<span class="ansi-red-fg">Type:</span>           ABCMeta
+<span class="ansi-red-fg">Subclasses:</span>     </pre>
+</div>
+</div>
+</div>
+</section>
+<section id="svr" class="level3">
+<h3 class="anchored" data-anchor-id="svr">?SVR</h3>
+<div class="cell" data-scrolled="true" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>?SVR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">Init signature:</span>
+SVR<span class="ansi-blue-fg">(</span>
+    <span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">,</span>
+    kernel<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'rbf'</span><span class="ansi-blue-fg">,</span>
+    degree<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">3</span><span class="ansi-blue-fg">,</span>
+    gamma<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">'scale'</span><span class="ansi-blue-fg">,</span>
+    coef0<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0.0</span><span class="ansi-blue-fg">,</span>
+    tol<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0.001</span><span class="ansi-blue-fg">,</span>
+    C<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1.0</span><span class="ansi-blue-fg">,</span>
+    epsilon<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">0.1</span><span class="ansi-blue-fg">,</span>
+    shrinking<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">,</span>
+    cache_size<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">200</span><span class="ansi-blue-fg">,</span>
+    verbose<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">False</span><span class="ansi-blue-fg">,</span>
+    max_iter<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">-</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span>
+<span class="ansi-blue-fg">)</span>
+<span class="ansi-red-fg">Docstring:</span>     
+Epsilon-Support Vector Regression.
+The free parameters in the model are C and epsilon.
+The implementation is based on libsvm. The fit time complexity
+is more than quadratic with the number of samples which makes it hard
+to scale to datasets with more than a couple of 10000 samples. For large
+datasets consider using :class:`~sklearn.svm.LinearSVR` or
+:class:`~sklearn.linear_model.SGDRegressor` instead, possibly after a
+:class:`~sklearn.kernel_approximation.Nystroem` transformer or
+other :ref:`kernel_approximation`.
+Read more in the :ref:`User Guide &lt;svm_regression&gt;`.
+Parameters
+----------
+kernel : {'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'} or callable,          default='rbf'
+     Specifies the kernel type to be used in the algorithm.
+     If none is given, 'rbf' will be used. If a callable is given it is
+     used to precompute the kernel matrix.
+degree : int, default=3
+    Degree of the polynomial kernel function ('poly').
+    Must be non-negative. Ignored by all other kernels.
+gamma : {'scale', 'auto'} or float, default='scale'
+    Kernel coefficient for 'rbf', 'poly' and 'sigmoid'.
+    - if ``gamma='scale'`` (default) is passed then it uses
+      1 / (n_features * X.var()) as value of gamma,
+    - if 'auto', uses 1 / n_features
+    - if float, must be non-negative.
+    .. versionchanged:: 0.22
+       The default value of ``gamma`` changed from 'auto' to 'scale'.
+coef0 : float, default=0.0
+    Independent term in kernel function.
+    It is only significant in 'poly' and 'sigmoid'.
+tol : float, default=1e-3
+    Tolerance for stopping criterion.
+C : float, default=1.0
+    Regularization parameter. The strength of the regularization is
+    inversely proportional to C. Must be strictly positive.
+    The penalty is a squared l2 penalty.
+epsilon : float, default=0.1
+     Epsilon in the epsilon-SVR model. It specifies the epsilon-tube
+     within which no penalty is associated in the training loss function
+     with points predicted within a distance epsilon from the actual
+     value. Must be non-negative.
+shrinking : bool, default=True
+    Whether to use the shrinking heuristic.
+    See the :ref:`User Guide &lt;shrinking_svm&gt;`.
+cache_size : float, default=200
+    Specify the size of the kernel cache (in MB).
+verbose : bool, default=False
+    Enable verbose output. Note that this setting takes advantage of a
+    per-process runtime setting in libsvm that, if enabled, may not work
+    properly in a multithreaded context.
+max_iter : int, default=-1
+    Hard limit on iterations within solver, or -1 for no limit.
+Attributes
+----------
+class_weight_ : ndarray of shape (n_classes,)
+    Multipliers of parameter C for each class.
+    Computed based on the ``class_weight`` parameter.
+    .. deprecated:: 1.2
+        `class_weight_` was deprecated in version 1.2 and will be removed in 1.4.
+coef_ : ndarray of shape (1, n_features)
+    Weights assigned to the features (coefficients in the primal
+    problem). This is only available in the case of a linear kernel.
+    `coef_` is readonly property derived from `dual_coef_` and
+    `support_vectors_`.
+dual_coef_ : ndarray of shape (1, n_SV)
+    Coefficients of the support vector in the decision function.
+fit_status_ : int
+    0 if correctly fitted, 1 otherwise (will raise warning)
+intercept_ : ndarray of shape (1,)
+    Constants in decision function.
+n_features_in_ : int
+    Number of features seen during :term:`fit`.
+    .. versionadded:: 0.24
+feature_names_in_ : ndarray of shape (`n_features_in_`,)
+    Names of features seen during :term:`fit`. Defined only when `X`
+    has feature names that are all strings.
+    .. versionadded:: 1.0
+n_iter_ : int
+    Number of iterations run by the optimization routine to fit the model.
+    .. versionadded:: 1.1
+n_support_ : ndarray of shape (1,), dtype=int32
+    Number of support vectors.
+shape_fit_ : tuple of int of shape (n_dimensions_of_X,)
+    Array dimensions of training vector ``X``.
+support_ : ndarray of shape (n_SV,)
+    Indices of support vectors.
+support_vectors_ : ndarray of shape (n_SV, n_features)
+    Support vectors.
+See Also
+--------
+NuSVR : Support Vector Machine for regression implemented using libsvm
+    using a parameter to control the number of support vectors.
+LinearSVR : Scalable Linear Support Vector Machine for regression
+    implemented using liblinear.
+References
+----------
+.. [1] `LIBSVM: A Library for Support Vector Machines
+    &lt;http://www.csie.ntu.edu.tw/~cjlin/papers/libsvm.pdf&gt;`_
+.. [2] `Platt, John (1999). "Probabilistic Outputs for Support Vector
+    Machines and Comparisons to Regularized Likelihood Methods"
+    &lt;https://citeseerx.ist.psu.edu/doc_view/pid/42e5ed832d4310ce4378c44d05570439df28a393&gt;`_
+Examples
+--------
+&gt;&gt;&gt; from sklearn.svm import SVR
+&gt;&gt;&gt; from sklearn.pipeline import make_pipeline
+&gt;&gt;&gt; from sklearn.preprocessing import StandardScaler
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; n_samples, n_features = 10, 5
+&gt;&gt;&gt; rng = np.random.RandomState(0)
+&gt;&gt;&gt; y = rng.randn(n_samples)
+&gt;&gt;&gt; X = rng.randn(n_samples, n_features)
+&gt;&gt;&gt; regr = make_pipeline(StandardScaler(), SVR(C=1.0, epsilon=0.2))
+&gt;&gt;&gt; regr.fit(X, y)
+Pipeline(steps=[('standardscaler', StandardScaler()),
+                ('svr', SVR(epsilon=0.2))])
+<span class="ansi-red-fg">File:</span>           ~/miniconda3/envs/571/lib/python3.11/site-packages/sklearn/svm/_classes.py
+<span class="ansi-red-fg">Type:</span>           ABCMeta
+<span class="ansi-red-fg">Subclasses:</span>     </pre>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -20,6 +20,8 @@ website:
           text: SVM RBF
       - text: Reducing Generalization Error
         href: 03_reducing-generalization-error.ipynb
+      - text: Data Preprocessing
+        href: 04_data-preprocessing.ipynb
 
 format:
   html:
