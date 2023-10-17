@@ -10,10 +10,14 @@ website:
         text: Home
       - text: Models
         menu:  
-        - href: 01_dummy.ipynb
+        - href: 0101_dummy.ipynb
           text: Dummy
-        - href: 02_decision-tree.ipynb
+        - href: 0102_decision-tree.ipynb
           text: Decision Tree
+        - href: 0103_knn.ipynb
+          text: k-Nearest Neighbours
+        - href: 0104_svm-rbf.ipynb
+          text: SVM RBF
       - text: Reducing Generalization Error
         href: 03_reducing-generalization-error.ipynb
 
